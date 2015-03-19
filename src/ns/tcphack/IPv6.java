@@ -35,6 +35,6 @@ public class IPv6 {
     }
 
     public static int getPayloadLength(byte[] headers) {
-        return (headers[4] << 8) + headers[5];
+        return ((headers[4] & 0xff) << 8) + (headers[5] & 0XFF);
     }
 }
