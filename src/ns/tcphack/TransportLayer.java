@@ -45,6 +45,12 @@ public class TransportLayer {
         TCPPacket packet = new TCPPacket(data);
         ackNumber = packet.getSequenceNumber() + packet.getData().length;
         sendAck();
+        try {
+            return new String(packet.getData(), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return "Error";
     }
 
     public void sendAck() {
