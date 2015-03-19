@@ -64,12 +64,16 @@ public class TCPPacket {
         return packet;
     }
 
-    public TCPPacket(int sourcePort, int destinationPort, int sequenceNumber, int acknowledgementNumber, int controlBits, int window, byte[] data) {
-        packet = new byte[5 * 4 + data.length]; // TODO: Options
-        packet[0] = (byte) ((sourcePort & 0xFF) >> 8);
-        packet[1] = (byte) (sourcePort & 0xFF);
+    public TCPPacket(byte[] data) {
+        packet = data;
+    }
 
-        packet[2] = (byte) ((destinationPort & 0xFF) >> 8);
+    public TCPPacket(int sourcePort, int destinationPort, int sequenceNumber, int acknowledgementNumber, int controlBits, int window, byte[] data, byte[] headers) {
+        packet = new byte[5 * 4 + data.length]; // TODO: Options
+
+        packet[0] = (byte) ((sourcePort & 0xFF00) >> 8);
+        packet[1] = (byte) (sourcePort & 0xFF);
+        packet[2] = (byte) ((destinationPort & 0xFF00) >> 8);
         packet[3] = (byte) (destinationPort & 0xFF);
 
         packet[4] = (byte) ((sequenceNumber & 0xFF000000) >> 24);
@@ -83,5 +87,34 @@ public class TCPPacket {
         packet[11] = (byte) (acknowledgementNumber & 0xFF);
 
         packet[12] = 6 << 2;
+        packet[13] = (byte) (controlBits & 0x63);
+        packet[14] = (byte) ((window & 0xFF00) >> 8);
+        packet[15] = (byte) (window & 0xFF);
+
+        packet[16] = 0;
+        packet[17] = 0;
+        packet[18] = 0;
+        packet[19] = 0;
+
+        System.arraycopy(data, 0, packet, 20, data.length);
+        System.arraycopy(checksum(headers), 0, packet, 16, 2);
+    }
+
+    public byte[] checksum(byte[] ipheader) {
+        byte[] temp = new byte[ipheader.length + packet.length];
+        System.arraycopy(ipheader, 0, temp, 0, ipheader.length);
+        System.arraycopy(packet, ipheader.length, temp, 0, packet.length);
+
+        short result = 0;
+        for (int i = 0; i < temp.length / 2; i++) {
+            short data;
+            if (i >= temp.length) {
+                data = (short) ((temp[i] & 0xFF) << 8);
+            } else {
+                data = (short) (((temp[i] & 0xFF) << 8) + (temp[i+1] & 0xFF));
+            }
+            result += data;
+        }
+        return new byte[]{(byte) ((result & 0xFF00) >> 8), (byte) (result & 0xFF)};
     }
 }
