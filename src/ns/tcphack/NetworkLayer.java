@@ -12,6 +12,10 @@ public class NetworkLayer {
         handler = tcp;
     }
 
+    public byte[] getOwnAddress() {
+        return src;
+    }
+
     public void send(byte[] dst, byte[] data) {
         byte[] headers = IPv6.makeHeaders(data.length, src, dst);
         byte[] packet = new byte[headers.length + data.length];
