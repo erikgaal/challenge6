@@ -60,6 +60,10 @@ public class TCPPacket {
         return data;
     }
 
+    public byte[] getPacket() {
+        return packet;
+    }
+
     public TCPPacket(int sourcePort, int destinationPort, int sequenceNumber, int acknowledgementNumber, int controlBits, int window, byte[] data) {
         packet = new byte[5 * 4 + data.length]; // TODO: Options
         packet[0] = (byte) ((sourcePort & 0xFF) >> 8);
