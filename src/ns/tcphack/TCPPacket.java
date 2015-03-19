@@ -68,7 +68,7 @@ public class TCPPacket {
         packet = data;
     }
 
-    public TCPPacket(int sourcePort, int destinationPort, int sequenceNumber, int acknowledgementNumber, int controlBits, int window, byte[] data, byte[] headers) {
+    public TCPPacket(int sourcePort, int destinationPort, int sequenceNumber, int acknowledgementNumber, int controlBits, int window, byte[] data) {
         packet = new byte[5 * 4 + data.length]; // TODO: Options
 
         packet[0] = (byte) ((sourcePort & 0xFF00) >> 8);
@@ -97,13 +97,24 @@ public class TCPPacket {
         packet[19] = 0;
 
         System.arraycopy(data, 0, packet, 20, data.length);
-        System.arraycopy(checksum(headers), 0, packet, 16, 2);
+        System.arraycopy(checksum(), 0, packet, 16, 2);
     }
 
-    public byte[] checksum(byte[] ipheader) {
-        byte[] temp = new byte[ipheader.length + packet.length];
-        System.arraycopy(ipheader, 0, temp, 0, ipheader.length);
-        System.arraycopy(packet, 0, temp, ipheader.length, packet.length);
+    public byte[] checksum() {
+        byte[] psuedoheader = new byte[40];
+        System.arraycopy(IPv6.myIP, 0, psuedoheader, 0, IPv6.myIP.length);
+        System.arraycopy(IPv6.remoteIP, 0, psuedoheader, 16, IPv6.remoteIP.length);
+
+        psuedoheader[32] = (byte) ((packet.length & 0xFF000000) >> 24);
+        psuedoheader[33] = (byte) ((packet.length & 0xFF0000) >> 16);
+        psuedoheader[34] = (byte) ((packet.length & 0xFF00) >> 8);
+        psuedoheader[35] = (byte) ((packet.length & 0xFF));
+
+        psuedoheader[39] = 6;
+
+        byte[] temp = new byte[psuedoheader.length + packet.length];
+        System.arraycopy(psuedoheader, 0, temp, 0, psuedoheader.length);
+        System.arraycopy(packet, 0, temp, psuedoheader.length, packet.length);
 
         short result = 0;
         for (int i = 0; i < temp.length / 2; i++) {
