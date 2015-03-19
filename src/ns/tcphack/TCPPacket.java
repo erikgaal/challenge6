@@ -68,6 +68,16 @@ public class TCPPacket {
         packet = data;
     }
 
+    public void print(byte[] buffer) {
+        for (int i = 0; i != buffer.length; ++i) {
+            System.out.printf("%x ", buffer[i]);
+            if (i%16 == 0) {
+                System.out.println();
+            }
+        }
+        System.out.println();
+    }
+
     public TCPPacket(int sourcePort, int destinationPort, int sequenceNumber, int acknowledgementNumber, int controlBits, int window, byte[] data) {
         packet = new byte[5 * 4 + data.length]; // TODO: Options
 
@@ -115,14 +125,13 @@ public class TCPPacket {
         byte[] temp = new byte[psuedoheader.length + packet.length];
         System.arraycopy(psuedoheader, 0, temp, 0, psuedoheader.length);
         System.arraycopy(packet, 0, temp, psuedoheader.length, packet.length);
-
-        short result = 0;
-        for (int i = 0; i < temp.length / 2; i++) {
-            short data;
+        int result = 0;
+        for (int i = 0; i < temp.length; i += 2) {
+            int data;
             if (i >= temp.length) {
-                data = (short) ((temp[i] & 0xFF) << 8);
+                data = ((temp[i] & 0xFF) << 8);
             } else {
-                data = (short) (((temp[i] & 0xFF) << 8) + (temp[i+1] & 0xFF));
+                data = (((temp[i] & 0xFF) << 8) + (temp[i+1] & 0xFF));
             }
             result += data;
         }
