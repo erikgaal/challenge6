@@ -56,7 +56,7 @@ public class TCPPacket {
     public byte[] getData() {
         int offset = getDataOffset();
         byte[] data = new byte[packet.length - getDataOffset() * 4];
-        System.arraycopy(packet, getDataOffset() * 4, data, 0, packet.length);
+        System.arraycopy(packet, getDataOffset() * 4, data, 0, packet.length - getDataOffset() * 4);
         return data;
     }
 
