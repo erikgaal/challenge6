@@ -86,7 +86,7 @@ public class TCPPacket {
         packet[10] = (byte) ((acknowledgementNumber & 0xFF00) >> 8);
         packet[11] = (byte) (acknowledgementNumber & 0xFF);
 
-        packet[12] = 6 << 2;
+        packet[12] = 5 << 4;
         packet[13] = (byte) (controlBits & 0x63);
         packet[14] = (byte) ((window & 0xFF00) >> 8);
         packet[15] = (byte) (window & 0xFF);
