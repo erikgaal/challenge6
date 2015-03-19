@@ -103,7 +103,7 @@ public class TCPPacket {
     public byte[] checksum(byte[] ipheader) {
         byte[] temp = new byte[ipheader.length + packet.length];
         System.arraycopy(ipheader, 0, temp, 0, ipheader.length);
-        System.arraycopy(packet, ipheader.length, temp, 0, packet.length);
+        System.arraycopy(packet, 0, temp, ipheader.length, packet.length);
 
         short result = 0;
         for (int i = 0; i < temp.length / 2; i++) {

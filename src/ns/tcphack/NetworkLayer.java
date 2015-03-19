@@ -26,6 +26,9 @@ public class NetworkLayer {
 
     public byte[] recv() {
         byte[] data = handler.receiveData(1);
+        if (data.length == 0) {
+            return new byte[0];
+        }
         byte[] res = new byte[data.length - 40];
         System.arraycopy(data, 40, res, 0, data.length - 40);
         return res;
