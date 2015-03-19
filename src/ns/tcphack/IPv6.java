@@ -21,7 +21,7 @@ public class IPv6 {
         headers[0] = 96;
         headers[4] = (byte)((payloadLen & 0xFF00) >> 8);
         headers[5] = (byte)(payloadLen & 0xFF);
-        headers[6] = 6;//(byte)253;
+        headers[6] = (byte)MyTcpHandler.VERSION;
         headers[7] = 64;
         for (int i = 0; i != 16; ++i) {
             headers[8 + i ] = srcAddress[i];

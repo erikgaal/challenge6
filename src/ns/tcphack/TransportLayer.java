@@ -23,6 +23,10 @@ public class TransportLayer {
         ackNumber = 0;
     }
 
+    public boolean connected() {
+        return connected;
+    }
+
     public void send(String message) {
         byte[] data = null;
         try {
@@ -45,6 +49,9 @@ public class TransportLayer {
         ackNumber = packet.getSequenceNumber() + packet.getData().length;
         sendAck();
         if (packet.getData().length == 0) {
+            if ((packet.getControlBits() & TCPPacket.ControlBit.SYN.getValue()) != 0) {
+                connected = true;
+            }
             return "";
         }
         try {

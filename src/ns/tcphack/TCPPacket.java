@@ -120,7 +120,7 @@ public class TCPPacket {
         psuedoheader[34] = (byte) ((packet.length & 0xFF00) >> 8);
         psuedoheader[35] = (byte) ((packet.length & 0xFF));
 
-        psuedoheader[39] = 6;
+        psuedoheader[39] = (byte)MyTcpHandler.VERSION;
 
         byte[] temp = new byte[psuedoheader.length + packet.length];
         System.arraycopy(psuedoheader, 0, temp, 0, psuedoheader.length);
