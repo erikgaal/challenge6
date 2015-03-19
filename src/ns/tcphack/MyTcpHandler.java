@@ -9,20 +9,25 @@ class MyTcpHandler extends TcpHandler {
 		super();
 
 		boolean done = false;
-		while (!done) {
+        byte[] myAddress = new byte[]
+                {       (byte) 0x20, (byte) 0x1, (byte) 0x6, (byte) 0x10,
+                        (byte) 0x19, (byte) 0x8, (byte) 0xf0, (byte) 0,
+                        (byte) 0x2, (byte) 0x1f, (byte) 0x1f, (byte) 0xff,
+                        (byte) 0xfe, (byte) 0xbe, (byte) 0x28, (byte) 0x5d};
 
-			// TODO: Implement your client for the server by combining:
-			//        - Send packets, use this.sendData(byte[]).
-			//           The data passed to sendData should contain raw
-			//           IP/TCP/(optionally HTTP) headers and data.
-			//        - Receive packets, you can retreive byte arrays using
-			//           byte[] this.receiveData(long timeout).
-			//           The timeout passed to this function will indicate the maximum amount of
-			//           milliseconds for receiveData to complete. When the timeout expires before a
-			//           packet is received, an empty array will be returned.
-			//
-			//           The data you'll receive and send will and should contain all packet 
-			//           data from the network layer and up.
+        byte[] remoteAddress = new byte[]
+                {       (byte) 0x20, (byte) 0x1, (byte) 0x6, (byte) 0x7c,
+                        (byte) 0x25, (byte) 0x64, (byte) 0xa1, (byte) 70,
+                        (byte) 0xa, (byte) 0x0, (byte) 0x27, (byte) 0xff,
+                        (byte) 0xfe, (byte) 0x11, (byte) 0xce, (byte) 0xcb};
+        NetworkLayer nLayer = new NetworkLayer(this, myAddress);
+        TransportLayer tLayer = new TransportLayer(nLayer, remoteAddress, 7711);
+        tLayer.connect();
+		while (!done) {
+            String result = tLayer.recv();
+            if (result != null) {
+                System.out.println("Packet: " + result);
+            }
 		}   
 	}
 }
