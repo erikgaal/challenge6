@@ -11,7 +11,7 @@ class MyTcpHandler extends TcpHandler {
 		boolean done = false;
 
         NetworkLayer nLayer = new NetworkLayer(this, IPv6.myIP);
-        TransportLayer tLayer = new TransportLayer(nLayer, IPv6.remoteIP, 7711);
+        TransportLayer tLayer = new TransportLayer(nLayer, IPv6.remoteIP, 7719);
         tLayer.connect();
 		while (!done) {
             String result = tLayer.recv();

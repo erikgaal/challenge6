@@ -30,9 +30,8 @@ public class TransportLayer {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        byte[] headers = IPv6.makeHeaders(20 + data.length, network.getOwnAddress(), dst);
         TCPPacket packet = new TCPPacket(srcPort, dstPort, seqNumber, ackNumber, TCPPacket.ControlBit.PSH.getValue()
-                | TCPPacket.ControlBit.ACK.getValue(), 64, data, headers);
+                | TCPPacket.ControlBit.ACK.getValue(), 64, data);
         seqNumber += data.length;
         network.send(dst, packet.getPacket());
     }
@@ -58,17 +57,15 @@ public class TransportLayer {
 
     public void sendAck() {
         byte[] data = new byte[0];
-        byte[] headers = IPv6.makeHeaders(20, network.getOwnAddress(), dst);
         TCPPacket packet = new TCPPacket(srcPort, dstPort, seqNumber, ackNumber,
-                TCPPacket.ControlBit.ACK.getValue(), 64, data, headers);
+                TCPPacket.ControlBit.ACK.getValue(), 64, data);
         network.send(dst, packet.getPacket());
     }
 
     public void connect() {
         //Lets send a SYN packet to connect.
         byte[] data = new byte[0];
-        byte[] headers = IPv6.makeHeaders(20, network.getOwnAddress(), dst);
-        TCPPacket packet = new TCPPacket(srcPort, dstPort, seqNumber, 0, TCPPacket.ControlBit.SYN.getValue(), 64, data, headers);
+        TCPPacket packet = new TCPPacket(srcPort, dstPort, seqNumber, 0, TCPPacket.ControlBit.SYN.getValue(), 64, data);
         network.send(dst, packet.getPacket());
     }
 }
