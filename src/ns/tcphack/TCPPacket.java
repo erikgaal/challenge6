@@ -96,8 +96,8 @@ public class TCPPacket {
         packet[10] = (byte) ((acknowledgementNumber & 0xFF00) >> 8);
         packet[11] = (byte) (acknowledgementNumber & 0xFF);
 
-        packet[12] = 5 << 4;
-        packet[13] = (byte) (controlBits & 0x63);
+        packet[12] = (byte) (5 << 4);
+        packet[13] = (byte) (controlBits & 63);
         packet[14] = (byte) ((window & 0xFF00) >> 8);
         packet[15] = (byte) (window & 0xFF);
 
@@ -128,7 +128,7 @@ public class TCPPacket {
         long result = 0;
         for (int i = 0; i < temp.length; i += 2) {
             long data;
-            if (i >= temp.length) {
+            if (i+1 >= temp.length) {
                 data = ((temp[i] << 8) & 0xFF00);
             } else {
                 data = (((temp[i] << 8) & 0xFF00) |  (temp[i+1] & 0xFF));

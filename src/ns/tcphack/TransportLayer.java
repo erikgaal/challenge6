@@ -28,8 +28,9 @@ public class TransportLayer {
     }
 
     public void close() {
-        TCPPacket packet = new TCPPacket(srcPort, dstPort, seqNumber, ackNumber,
+        TCPPacket packet = new TCPPacket(srcPort, dstPort, seqNumber, 0,
                 TCPPacket.ControlBit.FIN.getValue(), 64, new byte[0]);
+        network.send(dst, packet.getPacket());
     }
 
     public void send(String message) {
@@ -39,8 +40,7 @@ public class TransportLayer {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        TCPPacket packet = new TCPPacket(srcPort, dstPort, seqNumber, ackNumber, TCPPacket.ControlBit.PSH.getValue()
-                | TCPPacket.ControlBit.ACK.getValue(), 64, data);
+        TCPPacket packet = new TCPPacket(srcPort, dstPort, seqNumber, 0, TCPPacket.ControlBit.PSH.getValue(), 0xFFFF, data);
         seqNumber += data.length;
         network.send(dst, packet.getPacket());
     }
@@ -51,10 +51,15 @@ public class TransportLayer {
             return null;
         }
         TCPPacket packet = new TCPPacket(data);
-        ackNumber = packet.getSequenceNumber() + packet.getData().length;
+        int len = packet.getData().length;
+        if (packet.getData().length == 0) {
+            len++;
+        }
+        ackNumber = packet.getSequenceNumber() + len;
         sendAck();
         if (packet.getData().length == 0) {
             if ((packet.getControlBits() & TCPPacket.ControlBit.SYN.getValue()) != 0) {
+                System.out.println("CONNECTED!");
                 connected = true;
             }
             return "";
@@ -69,15 +74,15 @@ public class TransportLayer {
 
     public void sendAck() {
         byte[] data = new byte[0];
-        TCPPacket packet = new TCPPacket(srcPort, dstPort, seqNumber, ackNumber,
-                TCPPacket.ControlBit.ACK.getValue(), 64, data);
+        TCPPacket packet = new TCPPacket(srcPort, dstPort, ++seqNumber, ackNumber,
+                16, 0xFFFF, data);
         network.send(dst, packet.getPacket());
     }
 
     public void connect() {
         //Lets send a SYN packet to connect.
         byte[] data = new byte[0];
-        TCPPacket packet = new TCPPacket(srcPort, dstPort, seqNumber, 0, TCPPacket.ControlBit.SYN.getValue(), 64, data);
+        TCPPacket packet = new TCPPacket(srcPort, dstPort, seqNumber, 0, TCPPacket.ControlBit.SYN.getValue(), 0xFFFF, data);
         network.send(dst, packet.getPacket());
     }
 }
