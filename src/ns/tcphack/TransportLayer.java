@@ -27,6 +27,11 @@ public class TransportLayer {
         return connected;
     }
 
+    public void close() {
+        TCPPacket packet = new TCPPacket(srcPort, dstPort, seqNumber, ackNumber,
+                TCPPacket.ControlBit.FIN.getValue(), 64, new byte[0]);
+    }
+
     public void send(String message) {
         byte[] data = null;
         try {

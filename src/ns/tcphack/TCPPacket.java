@@ -125,16 +125,22 @@ public class TCPPacket {
         byte[] temp = new byte[psuedoheader.length + packet.length];
         System.arraycopy(psuedoheader, 0, temp, 0, psuedoheader.length);
         System.arraycopy(packet, 0, temp, psuedoheader.length, packet.length);
-        int result = 0;
+        long result = 0;
         for (int i = 0; i < temp.length; i += 2) {
-            int data;
+            long data;
             if (i >= temp.length) {
-                data = ((temp[i] & 0xFF) << 8);
+                data = ((temp[i] << 8) & 0xFF00);
             } else {
-                data = (((temp[i] & 0xFF) << 8) + (temp[i+1] & 0xFF));
+                data = (((temp[i] << 8) & 0xFF00) |  (temp[i+1] & 0xFF));
             }
             result += data;
+            if ((result & 0xFFFF0000) > 0) {
+                result &= 0xFFFF;
+                result++;
+            }
         }
+        result = ~result;
+        result = result & 0xFFFF;
         return new byte[]{(byte) ((result & 0xFF00) >> 8), (byte) (result & 0xFF)};
     }
 }

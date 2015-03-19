@@ -43,6 +43,7 @@ public class IPv6Test {
         return res;
     }
     public static void main(String[] args) {
+
         for (int i = 0; i != 1000000; ++i) {
             if (!test()) {
                 System.out.println("IPv6 class is broken! " + i);

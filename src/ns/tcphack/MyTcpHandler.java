@@ -1,7 +1,7 @@
 package ns.tcphack;
 
 class MyTcpHandler extends TcpHandler {
-    public static int VERSION = 253;
+    public static int VERSION = 6;
 
 	public static void main(String[] args) {
 		new MyTcpHandler();
